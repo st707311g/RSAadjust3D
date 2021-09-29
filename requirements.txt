@@ -1,0 +1,7 @@
+PyQt5
+pyopengl
+pyqtgraph
+psutil
+numpy
+scikit-image
+coloredlogs
