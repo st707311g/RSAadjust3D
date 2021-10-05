@@ -29,12 +29,12 @@ class QtOptions(QWidget):
         self.layout().addStretch() 
 
     def update_valid_option(self):
-        self.main_window_instance.data.pet_ct_volume
+        self.main_window_instance.data.pet_volume
 
         #// update resolution spinboxes
         for spinbox, resolution in zip(
-                    [self.resolution_group.xray_ct_resolution_edit, self.resolution_group.pet_ct_resolution_edit],
-                    [self.main_window_instance.data.ct_volume.resolution, self.main_window_instance.data.pet_ct_volume.resolution]
+                    [self.resolution_group.xray_ct_resolution_edit, self.resolution_group.pet_resolution_edit],
+                    [self.main_window_instance.data.ct_volume.resolution, self.main_window_instance.data.pet_volume.resolution]
                 ):
             spinbox.setText(str(resolution))
 
@@ -46,7 +46,7 @@ class QtOptions(QWidget):
                     self.flip_group,
                     self.intensity_group
                 ]:
-            widget.setEnabled(self.main_window_instance.data.pet_ct_volume.is_empty()==False)
+            widget.setEnabled(self.main_window_instance.data.pet_volume.is_empty()==False)
         
 class ResolutionGroup(QGroupBox):
     def __init__(self, parent: QtMain) -> None:
@@ -61,9 +61,9 @@ class ResolutionGroup(QGroupBox):
         self.xray_ct_resolution_edit = ResolutionLineEdit(toolTip='X-ray CT voxel resolution (double)')
         self.edit_layout.addWidget(self.xray_ct_resolution_edit)
 
-        self.label_layout.addWidget(QLabel('PET CT: '))
-        self.pet_ct_resolution_edit = ResolutionLineEdit(toolTip='PET CT voxel resolution (double)')
-        self.edit_layout.addWidget(self.pet_ct_resolution_edit)
+        self.label_layout.addWidget(QLabel('PET: '))
+        self.pet_resolution_edit = ResolutionLineEdit(toolTip='PET voxel resolution (double)')
+        self.edit_layout.addWidget(self.pet_resolution_edit)
 
         self.label_layout.addWidget(QLabel(''))
         self.push_button_rescale = QPushButton(parent=parent, text='Rescale')
@@ -76,11 +76,11 @@ class ResolutionGroup(QGroupBox):
 
     def on_push_button_rescale_pressed(self):
         self.main_window_instance.data.ct_volume.resolution = float(self.xray_ct_resolution_edit.text())
-        self.main_window_instance.data.pet_ct_volume.resolution = float(self.pet_ct_resolution_edit.text())
+        self.main_window_instance.data.pet_volume.resolution = float(self.pet_resolution_edit.text())
 
         self.main_window_instance.set_control(True)
-        rescaled_pet_ct_volume = self.main_window_instance.data.rescale_pet_ct_volume()
-        self.main_window_instance.threeD_viewer.set_pet_ct_volume(rescaled_pet_ct_volume)
+        rescaled_pet_volume = self.main_window_instance.data.rescale_pet_volume()
+        self.main_window_instance.threeD_viewer.set_pet_volume(rescaled_pet_volume)
         self.main_window_instance.set_control(False)
 
 class ResolutionLineEdit(QLineEdit):
@@ -188,9 +188,9 @@ class IntensityGroup(QGroupBox):
         self.layout().addWidget(QLabel('CT trace'))
         self.layout().addWidget(self.trace_slider)
 
-        self.pet_ct_slider = PET_IntensitySlider(parent=parent)
-        self.layout().addWidget(QLabel('PET CT'))
-        self.layout().addWidget(self.pet_ct_slider)
+        self.pet_slider = PET_IntensitySlider(parent=parent)
+        self.layout().addWidget(QLabel('PET'))
+        self.layout().addWidget(self.pet_slider)
 
 class IntensitySlider(QSlider):
     def __init__(self) -> None:
@@ -229,7 +229,7 @@ class PET_IntensitySlider(IntensitySlider):
         self.sliderReleased.connect(self.value_changed)
 
     def value_changed(self):
-        self.main_window_instance.threeD_viewer.pet_ct_volume_intensity_changed(intensity=self.value()/10)
+        self.main_window_instance.threeD_viewer.pet_volume_intensity_changed(intensity=self.value()/10)
 
 
 class ExportGroup(QGroupBox):
@@ -238,8 +238,8 @@ class ExportGroup(QGroupBox):
         self.main_window_instance = parent
         self.setLayout(QVBoxLayout(self))
 
-        self.push_button_registrated_pet_ct_volume = QPushButton(parent=parent, text='Registrated PET CT volume')
-        self.layout().addWidget(self.push_button_registrated_pet_ct_volume)
+        self.push_button_registrated_pet_volume = QPushButton(parent=parent, text='Registrated PET volume')
+        self.layout().addWidget(self.push_button_registrated_pet_volume)
 
-        self.push_button_registrated_pet_ct_volume.clicked.connect(self.main_window_instance.export_volume)
+        self.push_button_registrated_pet_volume.clicked.connect(self.main_window_instance.export_volume)
 

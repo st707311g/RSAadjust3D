@@ -1,4 +1,4 @@
-# RSAadjust3D: a position adjustment software for X-ray CT and PET-CT RSA data
+# RSAadjust3D: a position adjustment software for PET-CT RSA data
 
 ![python](https://img.shields.io/badge/Python->3.6-lightgreen)
 ![developed_by](https://img.shields.io/badge/developed%20by-Shota_Teramoto-lightgreen)
@@ -7,7 +7,7 @@
 
 ## introduction
 
-RSAadjust3D is a Python program for registration of two 3D volume data, X-ray CT volume and PET-CT volume. With a few simple mouse clicks, you can scale and position your images in minutes. With a simple mouse operation, a PET-CT image can be rescaled and overlaid on an X-ray CT image in a few minutes.
+RSAadjust3D is a Python program for registration of two 3D volume data, X-ray CT volume and PET volume. With a few simple mouse clicks, you can scale and position your images in minutes. With a simple mouse operation, a PET image can be rescaled and overlaid on an X-ray CT image in a few minutes.
 
 ## system requirements
 
@@ -61,7 +61,7 @@ X-ray CT volume filtered with [RSAvis3D](https://github.com/st707311g/RSAvis3D.g
 
 - DIR/
    - [volume_name]/ <span style="color: gray; "><- RSAvis3D volume</span>
-   - [volume_name]_PET/ <span style="color: gray; "><- PET-CT volume</span>
+   - [volume_name]_PET/ <span style="color: gray; "><- PET volume</span>
    - [volume_name].rinfo <span style="color: gray; "><- RSAtrace3D vector data</span>
 
 Move to the RSAadjust3D root directory which contains `__main__.py` file, and run the following command:
@@ -74,11 +74,11 @@ If environment is correctly installed, the main window will appear.
 ![Main window](./figures/mainwind.jpg) 
 
 1. 3D view of RSAvis3D volume, RSA vector trace, and PET-CT volume.
-2. Resolution for RSAvis3D and PET-CT volumes. The `Rescale` button rescales the PET-CT volume.
-3. Intensity of RSAvis3D volume, RSA vector trace, and PET-CT volume. Strong on the right, weak on the left.
-4. Flip the PET-CT volume.
-5. Shift and rotate setting for the PET-CT volume.
-6. Export registrated PET-CT volume. The file will be saved in a directory with the suffix "_registrated".
+2. Resolution for RSAvis3D and PET volumes. The `Rescale` button rescales the PET volume.
+3. Intensity of RSAvis3D volume, RSA vector trace, and PET volume. Strong on the right, weak on the left.
+4. Flip the PET volume.
+5. Shift and rotate setting for the PET volume.
+6. Export registrated PET volume. The file will be saved in a directory with the suffix "_registrated".
 
 ## version policy
 

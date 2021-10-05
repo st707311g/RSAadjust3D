@@ -2,7 +2,7 @@ import json
 import os
 
 application_name = 'RSAadjust3D'
-description = "a position adjustment software for X-ray CT and PET-CT RSA data "
+description = "a position adjustment software for PET-CT RSA data"
 version = 0
 revision = 1
 

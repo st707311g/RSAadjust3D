@@ -30,32 +30,32 @@ class Data(object):
     def __init__(self):
         self.file = File()
         self.ct_volume = Volume()
-        self.pet_ct_volume = Volume()
-        self.pet_ct_volume_rescaled = Volume()
+        self.pet_volume = Volume()
+        self.pet_volume_rescaled = Volume()
         self.rinfo = RSA_Vector()
         self.ct_trace = Trace()
 
     def clear_volumes(self):
         self.ct_volume.clear()
-        self.pet_ct_volume.clear()
+        self.pet_volume.clear()
 
-    def rescale_pet_ct_volume(self):
+    def rescale_pet_volume(self):
         ct_resolution = self.ct_volume.resolution
-        pet_ct_resolution = self.pet_ct_volume.resolution
+        pet_resolution = self.pet_volume.resolution
 
-        self.pet_ct_volume.scaling_factor = pet_ct_resolution / ct_resolution
+        self.pet_volume.scaling_factor = pet_resolution / ct_resolution
 
-        pet_ct_shape = self.pet_ct_volume.shape()
-        assert pet_ct_shape is not None
-        resized_shape = [int(s*self.pet_ct_volume.scaling_factor) for s in pet_ct_shape]
+        pet_shape = self.pet_volume.shape()
+        assert pet_shape is not None
+        resized_shape = [int(s*self.pet_volume.scaling_factor) for s in pet_shape]
         rescaled_ndarray = exposure.rescale_intensity(
-            transform.resize(self.pet_ct_volume.ndary, resized_shape),
+            transform.resize(self.pet_volume.ndary, resized_shape),
             out_range=np.uint8
         )
 
-        self.pet_ct_volume_rescaled.init_from_volume(rescaled_ndarray)
+        self.pet_volume_rescaled.init_from_volume(rescaled_ndarray)
 
-        return self.pet_ct_volume_rescaled
+        return self.pet_volume_rescaled
 
 class QtMain(QMainWindow):
     def __init__(self):
@@ -109,7 +109,7 @@ class QtMain(QMainWindow):
 
         self.threeD_viewer.set_ct_volume(None)
         self.threeD_viewer.set_ct_trace(None)
-        self.threeD_viewer.set_pet_ct_volume(None)
+        self.threeD_viewer.set_pet_volume(None)
 
         self.data.rinfo = RSA_Vector()
         self.data.ct_trace = Trace()
@@ -142,7 +142,7 @@ class QtMain(QMainWindow):
                     self.data.ct_volume.resolution = self.data.rinfo.annotations.resolution()
 
         if os.path.isdir(self.data.file.pet_directory()):
-            ret = QMessageBox.information(None, "Information", "The PET-CT directory is found. Do you want to import this?", QMessageBox.Yes, QMessageBox.No)
+            ret = QMessageBox.information(None, "Information", "The PET directory is found. Do you want to import this?", QMessageBox.Yes, QMessageBox.No)
             if ret == QMessageBox.Yes:
                 pet_file = File(volume_directory=self.data.file.pet_directory())
                 if not pet_file.is_valid():
@@ -153,11 +153,11 @@ class QtMain(QMainWindow):
                 pet_volume = [io.imread(f) for f in pet_file.image_files()]
                 pet_volume = np.asarray(pet_volume)
                 pet_volume = exposure.rescale_intensity(pet_volume, out_range=np.uint8)
-                self.data.pet_ct_volume.init_from_volume(pet_volume)
-                self.data.pet_ct_volume.resolution = self.data.ct_volume.resolution
+                self.data.pet_volume.init_from_volume(pet_volume)
+                self.data.pet_volume.resolution = self.data.ct_volume.resolution
 
-                #self.data.rescale_pet_ct_volume()
-                self.threeD_viewer.set_pet_ct_volume(self.data.pet_ct_volume)
+                #self.data.rescale_pet_volume()
+                self.threeD_viewer.set_pet_volume(self.data.pet_volume)
 
         self.GUI_components.options.update_valid_option()
 
@@ -219,11 +219,11 @@ class QtMain(QMainWindow):
 
     def export_volume(self):
         ct_volume = self.data.ct_volume
-        pet_ct_volume = self.data.pet_ct_volume_rescaled
+        pet_volume = self.data.pet_volume_rescaled
         registrator = self.threeD_viewer.registrator
 
         ct_ndarray = ct_volume.ndary
-        ndarray = pet_ct_volume.ndary
+        ndarray = pet_volume.ndary
         if ndarray is None or ct_ndarray is None:
             return
 

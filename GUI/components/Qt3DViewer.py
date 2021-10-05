@@ -64,13 +64,13 @@ class Registrator(object):
         self.gl_instance.resetTransform()
         self.gl_instance.scale(-1*self.z_flip,-1*self.y_flip,-1*self.x_flip)
 
-        pet_ct_volume = self.gl_instance.data
-        assert pet_ct_volume is not None
+        pet_volume = self.gl_instance.data
+        assert pet_volume is not None
 
         self.gl_instance.translate(
-            self.z_flip*pet_ct_volume.shape[0]//2+self.z, 
-            self.y_flip*pet_ct_volume.shape[1]//2+self.y, 
-            self.x_flip*pet_ct_volume.shape[2]//2+self.x
+            self.z_flip*pet_volume.shape[0]//2+self.z, 
+            self.y_flip*pet_volume.shape[1]//2+self.y, 
+            self.x_flip*pet_volume.shape[2]//2+self.x
         )
         self.gl_instance.rotate(self.angle, 1, 0, 0)
         
@@ -87,16 +87,16 @@ class Qt3DViewer(gl.GLViewWidget):
         self.ct_trace = None
         self.ct_volume_intensity = 1.
         self.ct_trace_intensity = 1.
-        self.pet_ct_volume_intensity = 1.
+        self.pet_volume_intensity = 1.
 
         self.gl_ct_volume = gl.GLVolumeItem(data=None, sliceDensity=1, smooth=True, glOptions='translucent')
         self.gl_ct_volume.scale(-1,-1,-1)
         self.addItem(self.gl_ct_volume)
 
-        self.gl_pet_ct_volume = gl.GLVolumeItem(data=None, sliceDensity=1, smooth=True, glOptions='additive')
-        self.addItem(self.gl_pet_ct_volume)
+        self.gl_pet_volume = gl.GLVolumeItem(data=None, sliceDensity=1, smooth=True, glOptions='additive')
+        self.addItem(self.gl_pet_volume)
 
-        self.registrator = Registrator(self.gl_pet_ct_volume)
+        self.registrator = Registrator(self.gl_pet_volume)
         self.show()
 
     def set_ct_volume(self, ct_volume: np.ndarray):
@@ -112,23 +112,21 @@ class Qt3DViewer(gl.GLViewWidget):
         self.gl_ct_volume.translate(self.ct_volume.shape[0]//2, self.ct_volume.shape[1]//2, self.ct_volume.shape[2]//2)
         self.update_ct_volume()
 
-    def set_pet_ct_volume(self, pet_ct_volume: Union[Volume, None]):
-        if pet_ct_volume is None:
-            self.gl_pet_ct_volume.setData(None)
+    def set_pet_volume(self, pet_volume: Union[Volume, None]):
+        if pet_volume is None:
+            self.gl_pet_volume.setData(None)
             return
-            
-        #scaling_factor = pet_ct_volume.scaling_factor
 
-        self.gl_pet_ct_volume.resetTransform()
-        self.gl_pet_ct_volume.scale(-1,-1,-1)
+        self.gl_pet_volume.resetTransform()
+        self.gl_pet_volume.scale(-1,-1,-1)
 
-        ndary = pet_ct_volume.ndary
+        ndary = pet_volume.ndary
         if ndary is not None:
-            self.pet_ct_volume = ndary[::config.skip_size, ::config.skip_size, ::config.skip_size]
-            self.pet_ct_volume_display = np.zeros(self.pet_ct_volume.shape + (4,), dtype=np.ubyte)
-            self.gl_pet_ct_volume.translate(self.pet_ct_volume.shape[0]//2, self.pet_ct_volume.shape[1]//2, self.pet_ct_volume.shape[2]//2)
+            self.pet_volume = ndary[::config.skip_size, ::config.skip_size, ::config.skip_size]
+            self.pet_volume_display = np.zeros(self.pet_volume.shape + (4,), dtype=np.ubyte)
+            self.gl_pet_volume.translate(self.pet_volume.shape[0]//2, self.pet_volume.shape[1]//2, self.pet_volume.shape[2]//2)
 
-        self.update_pet_ct_volume()
+        self.update_pet_volume()
 
     def set_ct_trace(self, ct_trace: np.ndarray):
         if ct_trace is None:
@@ -142,22 +140,22 @@ class Qt3DViewer(gl.GLViewWidget):
         self.ct_volume_intensity = intensity
         self.update_ct_volume()
 
-    def pet_ct_volume_intensity_changed(self, intensity: float):
-        self.pet_ct_volume_intensity = intensity
-        self.update_pet_ct_volume()
+    def pet_volume_intensity_changed(self, intensity: float):
+        self.pet_volume_intensity = intensity
+        self.update_pet_volume()
 
     def ct_trace_intensity_changed(self, intensity: float):
         self.ct_trace_intensity = intensity
         self.update_ct_volume()
 
-    def update_pet_ct_volume(self):
+    def update_pet_volume(self):
         try:
-            self.pet_ct_volume_display[...,0] = np.clip(self.pet_ct_volume*self.pet_ct_volume_intensity, 0, 255)
-            self.pet_ct_volume_display[...,1] = self.pet_ct_volume_display[...,0]
-            #self.pet_ct_volume_display[...,2] = self.pet_ct_volume_display[...,0]
-            self.pet_ct_volume_display[...,3] = np.clip(((self.pet_ct_volume_display[...,0]).astype(float) / 255.*2) **2 * 255, 0, 255)
+            self.pet_volume_display[...,0] = np.clip(self.pet_volume*self.pet_volume_intensity, 0, 255)
+            self.pet_volume_display[...,1] = self.pet_volume_display[...,0]
+            #self.pet_volume_display[...,2] = self.pet_volume_display[...,0]
+            self.pet_volume_display[...,3] = np.clip(((self.pet_volume_display[...,0]).astype(float) / 255.*2) **2 * 255, 0, 255)
 
-            self.gl_pet_ct_volume.setData(self.pet_ct_volume_display)
+            self.gl_pet_volume.setData(self.pet_volume_display)
         except:
             pass
         self.paintGL()
