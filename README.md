@@ -3,7 +3,7 @@
 ![python](https://img.shields.io/badge/Python->3.6-lightgreen)
 ![developed_by](https://img.shields.io/badge/developed%20by-Shota_Teramoto-lightgreen)
 ![version](https://img.shields.io/badge/version-0.1-lightgreen)
-![last_updated](https://img.shields.io/badge/last_update-September_29,_2021-lightgreen)
+![last_updated](https://img.shields.io/badge/last_update-October_5,_2021-lightgreen)
 
 ## introduction
 
@@ -110,4 +110,5 @@ Copyright (C) 2021 National Agriculture and Food Research Organization. All righ
 
 * version 0.1 (September 29, 2021)
   * initial version uploaded
+  * typo fixed (October 5, 2021)
   
